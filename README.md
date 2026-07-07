@@ -1,10 +1,6 @@
-Absolutely. A good README is often the first thing recruiters and hiring managers read. Since your project demonstrates a complete ML workflow, the README should highlight your methodology, not just the results.
+# Bank Fraud Detection using Machine Learning
 
-Here's a comprehensive README that you can use as a starting point.
-
-# 🏦 Bank Fraud Detection using Machine Learning
-
-## 📌 Project Overview
+## Project Overview
 
 Fraud detection is one of the most important applications of machine learning in the banking and financial services industry. Financial institutions process millions of transactions every day, making it impossible to manually identify fraudulent activities. Machine learning models can assist by learning transaction patterns and flagging potentially fraudulent transactions for further investigation.
 
