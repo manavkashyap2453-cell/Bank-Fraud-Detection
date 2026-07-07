@@ -1,14 +1,41 @@
-# Bank Fraud Detection using Machine Learning
+#  Bank Fraud Detection using Machine Learning
 
-## Project Overview
-
-Fraud detection is one of the most important applications of machine learning in the banking and financial services industry. Financial institutions process millions of transactions every day, making it impossible to manually identify fraudulent activities. Machine learning models can assist by learning transaction patterns and flagging potentially fraudulent transactions for further investigation.
-
-This project demonstrates an end-to-end machine learning workflow for fraud detection, starting from exploratory data analysis to model training and evaluation. The primary objective was not only to build classification models but also to follow a systematic and production-oriented machine learning pipeline while understanding the challenges associated with highly imbalanced datasets.
+An end-to-end Machine Learning project that explores the complete workflow of building a fraud detection system—from data exploration and feature engineering to preprocessing, model training, and evaluation.
 
 ---
 
-# 🎯 Objectives
+##  Table of Contents
+
+* [Project Overview](#-project-overview)
+* [Objectives](#-objectives)
+* [Project Structure](#-project-structure)
+* [Dataset Summary](#-dataset-summary)
+* [Exploratory Data Analysis](#-exploratory-data-analysis)
+* [SQL Analysis](#-sql-analysis)
+* [Feature Engineering](#-feature-engineering)
+* [Data Preprocessing](#-data-preprocessing)
+* [Handling Class Imbalance](#-handling-class-imbalance)
+* [Machine Learning Models](#-machine-learning-models)
+* [Evaluation Metrics](#-evaluation-metrics)
+* [Experimental Findings](#-experimental-findings)
+* [Key Learnings](#-key-learnings)
+* [Technologies Used](#-technologies-used)
+* [Future Improvements](#-future-improvements)
+* [Conclusion](#-conclusion)
+
+---
+
+#  Project Overview
+
+Fraud detection is one of the most important applications of Machine Learning in the banking and financial services industry. Financial institutions process millions of transactions every day, making it impossible to manually identify fraudulent activities. Machine learning models can assist by learning transaction patterns and flagging potentially fraudulent transactions for further investigation.
+
+This project demonstrates a complete Machine Learning workflow for fraud detection, starting from exploratory data analysis and SQL-based business analysis to preprocessing, feature engineering, model training, and evaluation.
+
+The primary objective of this project was **not only to build classification models**, but also to follow a structured and production-oriented Machine Learning pipeline while understanding the challenges associated with highly imbalanced datasets.
+
+---
+
+#  Objectives
 
 The project aims to:
 
@@ -17,53 +44,60 @@ The project aims to:
 * Engineer meaningful features from raw transaction data.
 * Build a reusable preprocessing pipeline using `Pipeline` and `ColumnTransformer`.
 * Handle severe class imbalance using different techniques.
-* Train multiple machine learning models.
+* Train multiple Machine Learning models.
 * Compare model performance using appropriate evaluation metrics.
-* Draw conclusions based on experimental results rather than assumptions.
+* Draw conclusions based on experimental evidence rather than assumptions.
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
-```
+```text
 Bank-Fraud-Detection/
 │
-├── .gitignore               # Keeps your GitHub repo clean from data/caches
-├── README.md                # Project documentation
-├── requirements.txt         # Project dependencie
+├── .gitignore
+├── README.md
+├── requirements.txt
 │
-├── artifacts/                  # Saved .pkl / .joblib artifacts (ignored by git)
+├── artifacts/
 │   ├── preprocessor.pkl
-│   └── X_train_processed.pkl
-│   └── X_test_processed.pkl
-│   └── y_test.pkl
-│   └── y_train.pkl
-├── notebooks/               # Dedicated space for notebooks
+│   ├── X_train_processed.pkl
+│   ├── X_test_processed.pkl
+│   ├── X_train_balanced.pkl
+│   ├── y_train.pkl
+│   ├── y_test.pkl
+│   └── y_train_balanced.pkl
+│
+├── notebooks/
 │   ├── eda.ipynb
 │   ├── sql_analysis.ipynb
 │   ├── preprocessing.ipynb
-│   └── model_building.ipynb # Fixed typo!
+│   └── model_building.ipynb
 │
+└── app.py
+```
 
 ---
 
-# Dataset Summary
+#  Dataset Summary
 
 The dataset consists of banking transaction records containing customer information, transaction details, account information, merchant details, and a fraud label.
 
 ### Dataset Characteristics
 
-* Number of records: **200,000**
-* Total features: **24**
-* Target variable: **Is_Fraud**
-* Fraudulent transactions: **5.04%**
-* Legitimate transactions: **94.96%**
+| Property                | Value        |
+| ----------------------- | ------------ |
+| Number of Records       | **200,000**  |
+| Total Features          | **24**       |
+| Target Variable         | **Is_Fraud** |
+| Fraudulent Transactions | **5.04%**    |
+| Legitimate Transactions | **94.96%**   |
 
-The dataset is highly imbalanced, making accuracy an unreliable metric for model evaluation.
+The dataset is highly imbalanced, making **Accuracy** an unreliable metric for evaluating model performance.
 
 ---
 
-# Exploratory Data Analysis
+#  Exploratory Data Analysis
 
 The following analyses were performed:
 
@@ -78,108 +112,98 @@ The following analyses were performed:
 
 ### Key Findings
 
-* No missing values were present.
-* No duplicate records were found.
-* Numerical features did not exhibit significant outliers.
-* The fraud class constituted only about **5%** of the dataset.
-* Numerical features showed weak linear correlations.
-* Several columns were identified as identifiers or low-information features and removed prior to modeling.
+* No missing values were found.
+* No duplicate records were present.
+* Numerical features did not contain significant outliers.
+* Fraudulent transactions represented only **5.04%** of the dataset.
+* Numerical variables exhibited weak linear correlations.
+* Several identifier and low-information columns were removed before model training.
 
 ---
 
-# SQL Analysis
+#  SQL Analysis
 
-In addition to EDA, SQL was used to explore the dataset from a business perspective.
+In addition to EDA, SQL was used to analyze the dataset from a business perspective.
 
-Examples of analyses include:
+The analysis included:
 
-* Fraud rates across states
-* Fraud rates by merchant category
+* Fraud rates across different states
+* Merchant category analysis
 * Device-wise fraud distribution
 * Account type analysis
 * Transaction channel analysis
 * Age group analysis
-* Gender-based fraud analysis
+* Gender-wise fraud analysis
 
-This helped identify business patterns that may not be immediately visible through visualizations alone.
+These queries helped uncover business insights that complemented the findings from exploratory data analysis.
 
 ---
 
-# ⚙ Feature Engineering
+#  Feature Engineering
 
-The following features were created:
+Several new features were created to better represent transaction behavior.
 
-### Day of Week
+### 1. Day of Week
 
-Extracted from:
+Extracted from `Transaction_Date` to capture weekday and weekend transaction patterns.
 
-```
-Transaction_Date
-```
+### 2. Hour
 
-to capture weekday vs weekend transaction behavior.
+Extracted from `Transaction_Time` to capture time-of-day transaction behavior.
 
-### Hour
+### 3. Amount Balance Ratio
 
-Extracted from:
-
-```
-Transaction_Time
-```
-
-to capture time-based transaction patterns.
-
-### Amount Balance Ratio
-
-```
+```text
 Transaction_Amount / Account_Balance
 ```
 
-This feature captures the proportion of the customer's balance involved in the transaction.
+This feature represents the proportion of the customer's account balance involved in a transaction.
 
 ---
 
-# Data Preprocessing
+#  Data Preprocessing
 
-A complete preprocessing pipeline was implemented using Scikit-learn.
+A reusable preprocessing pipeline was implemented using Scikit-learn.
 
-### Steps
+### Preprocessing Steps
 
 * Removed identifier columns
-* Removed redundant columns
-* Feature engineering
-* Train-test split using stratified sampling
-* Numerical preprocessing using StandardScaler
-* Categorical preprocessing using OneHotEncoder
-* Combined preprocessing using ColumnTransformer
+* Removed redundant features
+* Performed feature engineering
+* Stratified Train-Test Split
+* Standardized numerical features using `StandardScaler`
+* One-Hot Encoded categorical features using `OneHotEncoder`
+* Combined transformations using `ColumnTransformer`
 
-The fitted preprocessor was saved using Joblib for future inference.
+The fitted preprocessing pipeline was serialized using **Joblib** for future inference.
 
 ---
 
-# ⚖ Handling Class Imbalance
+#  Handling Class Imbalance
 
-Since fraudulent transactions represented only **5%** of the dataset, multiple imbalance handling strategies were explored.
+The dataset contained only **5.04%** fraudulent transactions.
+
+To address this challenge, multiple imbalance handling strategies were explored.
 
 ### Baseline
 
-Models trained on the original dataset.
+Models trained directly on the original dataset.
 
 ### SMOTE
 
-Synthetic Minority Oversampling Technique was applied only to the training data to avoid data leakage.
+Synthetic Minority Oversampling Technique (SMOTE) was applied **only to the training set** to avoid data leakage.
 
 ### Class Weights
 
-Models supporting class weighting were trained using balanced class weights.
+For supported algorithms, balanced class weights were used to penalize misclassification of the minority class.
 
-This comparison helped evaluate the effectiveness of different imbalance handling strategies.
+This allowed comparison of different imbalance handling strategies under the same evaluation framework.
 
 ---
 
-# Machine Learning Models
+#  Machine Learning Models
 
-The following models were evaluated:
+The following models were trained and evaluated:
 
 * Logistic Regression
 * Logistic Regression + SMOTE
@@ -188,79 +212,84 @@ The following models were evaluated:
 * Random Forest
 * Random Forest + Class Weights
 
-Each model was evaluated on the untouched test set.
+Each model was evaluated on the untouched test dataset.
 
 ---
 
-# Evaluation Metrics
+#  Evaluation Metrics
 
-The following metrics were used:
+The following evaluation metrics were used:
 
 * Accuracy
 * Precision
 * Recall
-* F1 Score
-* ROC-AUC
+* F1-Score
+* ROC-AUC Score
 
-Given the highly imbalanced nature of the dataset, greater emphasis was placed on Precision, Recall, F1 Score, and ROC-AUC rather than Accuracy.
+Given the highly imbalanced nature of the dataset, greater importance was placed on **Precision**, **Recall**, **F1-Score**, and **ROC-AUC** rather than overall Accuracy.
 
 ---
 
-# Experimental Findings
+#  Experimental Findings
 
-The experiments demonstrated that:
+The experiments revealed the following observations:
 
-* Logistic Regression trained on the original data predicted almost every transaction as legitimate.
+* Logistic Regression trained on the original dataset predicted almost every transaction as legitimate.
 * Applying SMOTE improved recall for Logistic Regression but significantly reduced precision.
-* Decision Tree models showed limited predictive performance.
-* Random Forest models did not exhibit significant improvement even after class weighting.
-* All evaluated models achieved ROC-AUC values close to **0.50**, indicating poor class separability.
+* Decision Tree models showed only marginal predictive performance.
+* Random Forest models did not exhibit meaningful improvement after applying class weighting.
+* Across all experiments, the ROC-AUC remained close to **0.50**, indicating poor class separability.
+
+These findings suggest that the available features contain limited predictive information for distinguishing fraudulent transactions.
 
 ---
 
-# Key Learning
+#  Key Learnings
 
-One of the most important takeaways from this project is that a well-designed machine learning pipeline does not necessarily produce a high-performing model.
+One of the most valuable outcomes of this project is understanding that **a well-designed Machine Learning pipeline does not always guarantee a high-performing model**.
 
-This project reinforces several practical lessons:
+This project reinforced several important Machine Learning principles:
 
-* Proper preprocessing is essential.
+* Data quality is as important as model selection.
 * Preventing data leakage is critical.
-* Multiple imbalance handling techniques should be compared rather than assumed to be beneficial.
-* Model performance should always be validated using appropriate evaluation metrics.
-* Honest interpretation of experimental results is more valuable than overfitting a model to achieve better scores.
+* Class imbalance should be handled carefully and evaluated experimentally.
+* Accuracy alone is not an appropriate metric for imbalanced classification problems.
+* Honest interpretation of model performance is more valuable than reporting artificially inflated metrics.
+* Systematic experimentation is an essential part of building reliable Machine Learning systems.
 
 ---
 
-# Technologies Used
+#  Technologies Used
 
-* Python
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Scikit-learn
-* Imbalanced-learn
-* Joblib
-* SQL
-
----
-
-# Future Improvements
-
-Potential improvements include:
-
-* Evaluating boosting algorithms such as XGBoost, LightGBM, and CatBoost.
-* Performing hyperparameter tuning.
-* Implementing explainability using SHAP.
-* Building a Streamlit or Flask application for inference.
-* Experimenting with additional behavioral features.
-* Evaluating the pipeline on a real-world fraud detection dataset.
+| Category             | Technologies             |
+| -------------------- | ------------------------ |
+| Programming Language | Python                   |
+| Data Manipulation    | Pandas, NumPy            |
+| Visualization        | Matplotlib, Seaborn      |
+| Machine Learning     | Scikit-learn             |
+| Imbalance Handling   | Imbalanced-learn (SMOTE) |
+| Model Serialization  | Joblib                   |
+| Database Analysis    | SQL                      |
 
 ---
 
-# Conclusion
+#  Future Improvements
 
-This project demonstrates an end-to-end supervised machine learning workflow for fraud detection, including data exploration, SQL-based business analysis, feature engineering, preprocessing, class imbalance handling, model training, and evaluation.
+Potential enhancements include:
 
-Although the evaluated models did not achieve strong predictive performance, the project highlights the importance of systematic experimentation, rigorous evaluation, and evidence-based conclusions. The experience gained from building a complete machine learning pipeline is directly transferable to real-world classification problems where data quality and feature informativeness play a critical role in model performance.
+* Evaluate advanced ensemble methods such as XGBoost, LightGBM, and CatBoost.
+* Perform hyperparameter tuning using Grid Search or Randomized Search.
+* Implement explainable AI techniques using SHAP.
+* Deploy the trained model using Streamlit or Flask.
+* Engineer additional behavioral and temporal features.
+* Evaluate the pipeline on a real-world fraud detection dataset with stronger predictive signals.
+
+---
+
+#  Conclusion
+
+This project demonstrates a complete supervised Machine Learning workflow for fraud detection, covering data exploration, SQL-based business analysis, feature engineering, preprocessing, class imbalance handling, model training, and evaluation.
+
+Although the evaluated models did not achieve strong predictive performance, the project highlights the importance of systematic experimentation, rigorous evaluation, and evidence-based decision-making. The consistently low ROC-AUC scores suggest that the available features provide limited predictive signal for the target variable.
+
+More importantly, this project demonstrates the ability to build a structured Machine Learning pipeline, apply best practices to avoid data leakage, compare multiple modeling strategies, and critically interpret experimental results—skills that are directly applicable to real-world Machine Learning projects.
